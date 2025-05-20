@@ -24,7 +24,7 @@
     <modules>
         <module>OrderService</module>
 		<module>InventoryService</module>
-		<module>product-service</module>
+<!--		<module>product-service</module>-->
 	</modules>
     <scm>
 		<connection/>
@@ -58,6 +58,9 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

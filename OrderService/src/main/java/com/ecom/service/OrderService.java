@@ -1,5 +1,6 @@
 package com.ecom.service;
 
+import com.ecom.client.InventoryClient;
 import com.ecom.dto.Orderrequest;
 import com.ecom.model.Order;
 import com.ecom.repo.OrderRepository;
@@ -14,18 +15,25 @@ import java.util.UUID;
 public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private InventoryClient inventoryClient;
     public void placeOrder(Orderrequest orderrequest){
+        var isProductInStock=inventoryClient.isInStock(orderrequest.skuCode(),orderrequest.quantity());
         //map orderrequest to order object
 
         //creating order object
-        Order order = new Order();
-        order.setOrderDate(orderrequest.orderDate());
-        order.setOrderNumber(orderrequest.orderNumber());
-        order.setPrice(orderrequest.price());
-        order.setUserId(orderrequest.userId());
-        order.setQuantity(orderrequest.quantity());
-        order.setSkuCode(orderrequest.skuCode());
-        orderRepository.save(order);
+        if(isProductInStock) {
+            Order order = new Order();
+            order.setOrderDate(orderrequest.orderDate());
+            order.setOrderNumber(orderrequest.orderNumber());
+            order.setPrice(orderrequest.price());
+            order.setUserId(orderrequest.userId());
+            order.setQuantity(orderrequest.quantity());
+            order.setSkuCode(orderrequest.skuCode());
+            orderRepository.save(order);
+        }else {
+            throw new RuntimeException("product with skuCode"+orderrequest.skuCode()+"is not in stock");
+        }
         //save order to order repository
 
 
