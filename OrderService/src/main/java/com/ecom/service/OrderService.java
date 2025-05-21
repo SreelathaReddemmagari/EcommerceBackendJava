@@ -30,13 +30,21 @@ public class OrderService {
             order.setUserId(orderrequest.userId());
             order.setQuantity(orderrequest.quantity());
             order.setSkuCode(orderrequest.skuCode());
+            order.setStatus("Order Placed");
             orderRepository.save(order);
+            inventoryClient.reduceStock(orderrequest.skuCode(), orderrequest.quantity());
+
         }else {
-            throw new RuntimeException("product with skuCode"+orderrequest.skuCode()+"is not in stock");
+            throw new OutOfStockException("Product with SKU code " + orderrequest.skuCode() + " is not in stock");
         }
         //save order to order repository
 
 
+    }
+    public class OutOfStockException extends RuntimeException {
+        public OutOfStockException(String message) {
+            super(message);
+        }
     }
     //list all the orders
     public List<Order> getAllOrders() {

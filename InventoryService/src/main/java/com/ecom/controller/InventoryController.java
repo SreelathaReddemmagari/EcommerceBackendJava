@@ -3,6 +3,7 @@ package com.ecom.controller;
 import com.ecom.model.Inventory;
 import com.ecom.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,14 +31,10 @@ public class InventoryController {
     }
 
     // Reduce stock from an inventory item
-    @PostMapping("/reducestock")
-    public ResponseEntity<String> reduceStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
+    @PostMapping(value = "/reducestock",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> reduceStock(@RequestParam String skuCode, @RequestParam Integer quantity) {
         boolean success = inventoryService.reduceStock(skuCode, quantity);
-        if (success) {
-            return ResponseEntity.ok("Stock reduced successfully.");
-        } else {
-            return ResponseEntity.badRequest().body("Insufficient stock or SKU not found.");
-        }
+        return ResponseEntity.ok(success); // Always returns HTTP 200 with true/false as JSON
     }
 
     // Get available quantity for a SKU
