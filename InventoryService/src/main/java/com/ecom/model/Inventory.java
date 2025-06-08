@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -18,42 +21,50 @@ import java.util.Date;
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "sku_code")
-    private String skuCode;
+    @Column(name = "inventory_id")
+    private Long inventoryId;
 
+    @Column(name = "product_id", nullable = false)
+    private String productId;
+
+    @Column(name = "sku", nullable = false, unique = true)
+    private String sku;
+
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
-//    public Inventory() {}
+
+//    @Column(name = "reserved_quantity", nullable = false)
+//    private Integer reservedQuantity;
+
+    @Column(name = "reorder_level", nullable = false)
+    private Integer reorderLevel;
+
+//    @Column(name = "updated_at", nullable = false)
+//    private LocalDateTime updatedAt;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "status_description")
+    private String statusDescription;
+
+//    @PrePersist
+//    public void prePersist() {
+//        if (updatedAt == null) {
+//            updatedAt = LocalDateTime.now();
+//        }
+//    }
+//    @Column(name = "reserved_until")
+//    private LocalDateTime reservedUntil;
 //
-//    public Inventory(Long id, String skuCode, Integer quantity) {
-//        this.id = id;
-//        this.skuCode = skuCode;
-//        this.quantity = quantity;
+//    @PreUpdate
+//    public void preUpdate() {
+//        updatedAt = LocalDateTime.now();
 //    }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSkuCode() {
-        return skuCode;
-    }
-
-    public void setSkuCode(String skuCode) {
-        this.skuCode = skuCode;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
+//    @PreUpdate
+//    public void preUpdate() {
+//        updatedAt = LocalDateTime.now();
+//    }
 }
 

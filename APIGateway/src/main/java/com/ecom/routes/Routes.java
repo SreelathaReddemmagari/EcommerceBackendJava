@@ -11,12 +11,22 @@ import org.springframework.web.servlet.function.*;
 public class Routes {
     //this function is used to route the response from server
     //here we are using functional end point programming model
+    //here we are using handlerfunction and http method for routing the url
 
+//    @Bean
+//    public RouterFunction<ServerResponse> OrderFunctionRoute() {
+//        return GatewayRouterFunctions.route("OrderService")
+//                .route(RequestPredicates.POST("/order/place"),
+//                        HandlerFunctions.http("http://localhost:8081"))
+//                .build();
+//    }
     @Bean
-    public RouterFunction<ServerResponse> OrderFunctionRoute() {
-        return GatewayRouterFunctions.route("OrderService")
-                .route(RequestPredicates.POST("/order/place"),
+    public RouterFunction<ServerResponse> ProductFunctionRoute() {
+        return RouterFunctions.route(RequestPredicates.POST("/api/category"),
                         HandlerFunctions.http("http://localhost:8081"))
-                .build();
+                .andRoute(RequestPredicates.POST("/api/product"),
+                HandlerFunctions.http("http://localhost:8081"));
+
     }
+
 }

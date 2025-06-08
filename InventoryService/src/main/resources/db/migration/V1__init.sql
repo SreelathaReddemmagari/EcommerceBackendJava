@@ -1,8 +1,14 @@
 USE `inventory-service`;
 
-CREATE TABLE inventory (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
---    skuCode VARCHAR(255) NOT NULL UNIQUE,
-   sku_code VARCHAR(255) NOT NULL UNIQUE,
-    quantity INT NOT NULL
+CREATE TABLE IF NOT EXISTS inventory (
+    inventory_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_id VARCHAR(100) NOT NULL,
+    sku VARCHAR(100) NOT NULL UNIQUE,
+    quantity INT NOT NULL,
+    reserved_quantity INT NOT NULL DEFAULT 0,
+    reserved_until DATETIME,
+    reorder_level INT NOT NULL DEFAULT 10,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    status_description TEXT
 );

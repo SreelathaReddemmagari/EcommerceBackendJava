@@ -1,0 +1,25 @@
+--CREATE DATABASE IF NOT EXISTS `cart-service`;
+--
+--USE `cart-service`;
+--
+---- Create 'cart' table
+--CREATE TABLE IF NOT EXISTS cart (
+--    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+--    user_id INT NOT NULL,
+--    created_at DATETIME NOT NULL,
+--    updated_at DATETIME NOT NULL
+--);
+--
+---- Create 'cart_items' table with product_name and unit_price
+--CREATE TABLE IF NOT EXISTS cart_items (
+--    cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
+--    cart_id INT NOT NULL,
+--    product_id INT NOT NULL,
+--    product_name VARCHAR(255),
+--    unit_price DOUBLE,
+--    quantity INT NOT NULL,
+--    CONSTRAINT fk_cart
+--        FOREIGN KEY (cart_id)
+--        REFERENCES cart(cart_id)
+--        ON DELETE CASCADE
+--);

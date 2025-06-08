@@ -1,0 +1,50 @@
+#version: '3.8'
+#
+#services:
+#  mysql:
+#    image: mysql:8.0
+#    container_name: mysql4
+#    environment:
+#      MYSQL_DATABASE: cart-service
+#      MYSQL_ROOT_PASSWORD: mysql3
+#    ports:
+#      - "3309:3306"
+#    volumes:
+#      - mysql-data:/var/lib/mysql
+#      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+#
+#volumes:
+#  mysql-data:
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongo-cart
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: cart_db
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - cart_network
+
+  cart-service:
+    build: .
+    container_name: cart-service
+    ports:
+        - "8080:8084"
+
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/cart_db
+    depends_on:
+      - mongodb
+    networks:
+      - cart_network
+
+volumes:
+  mongo_data:
+
+networks:
+  cart_network:
