@@ -1,7 +1,7 @@
 package com.ecom.dto;
 
 import java.util.UUID;
-
+//Represents each cart item in the response.
 public class CartItemResponseDto {
     private Long productId;
     private String productName;

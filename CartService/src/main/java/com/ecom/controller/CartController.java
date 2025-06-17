@@ -22,7 +22,7 @@ public class CartController {
     }
 
     @PostMapping
-
+  //which is used to create cart for each user
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CartResponseDto> createCart(@RequestBody CartRequestDto cartRequestDto) {
         CartResponseDto response = cartService.createCart(cartRequestDto);

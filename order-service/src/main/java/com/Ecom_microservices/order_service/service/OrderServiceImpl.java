@@ -420,13 +420,16 @@ package com.Ecom_microservices.order_service.service;
 import com.Ecom_microservices.order_service.client.CartServiceClient;
 import com.Ecom_microservices.order_service.client.InventoryClient;
 import com.Ecom_microservices.order_service.dto.*;
+import com.Ecom_microservices.order_service.entity.CombinedOrderEntity;
 import com.Ecom_microservices.order_service.entity.OrderItems;
 import com.Ecom_microservices.order_service.entity.OrderStatus;
 import com.Ecom_microservices.order_service.entity.Orders;
 import com.Ecom_microservices.order_service.repository.OrderRepository;
+import com.Ecom_microservices.order_service.utility.OrderMapper;
 import com.Ecom_microservices.order_service.utility.OrderWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -503,7 +506,7 @@ public class OrderServiceImpl implements OrderService {
         order.setId(orderId);
         order.setUserId(orderRequestDTO.getUserId().toString());
         order.setPrimaryProductId(itemResponses.get(0).getProductId().toString());
-        order.setPaymentId(generatePaymentId());
+        order.setPaymentId(null);
         order.setOrderDate(now);
         order.setTotalPrice(total);
         order.setStatus("PENDING");
@@ -595,13 +598,126 @@ public class OrderServiceImpl implements OrderService {
         return dto;
     }
 
-    private String generatePaymentId() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 8; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
+//    private String generatePaymentId() {
+//        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//        StringBuilder sb = new StringBuilder();
+//        Random random = new Random();
+//        for (int i = 0; i < 8; i++) {
+//            sb.append(chars.charAt(random.nextInt(chars.length())));
+//        }
+//        return sb.toString();
+//    }
+    @Override
+    public OrderResponseDTO getOrderById(String orderId) {
+        OrderWrapper wrapper = orderRepository.findOrderById(orderId);
+        if (wrapper == null || wrapper.getOrder() == null) {
+            throw new RuntimeException("Order not found");
         }
-        return sb.toString();
+
+        Orders order = wrapper.getOrder();
+
+        List<OrderItemResponseDTO> itemResponses = wrapper.getItems().stream().map(item -> {
+            OrderItemResponseDTO dto = new OrderItemResponseDTO();
+            dto.setOrderItemId(item.getOrderItemId());
+            dto.setProductId(Long.valueOf(item.getProductId()));
+            dto.setProductName(item.getProductName());
+            dto.setQuantity(item.getQuantity());
+            dto.setPrice(item.getPrice());
+            return dto;
+        }).toList();
+
+        List<OrderStatusDTO> statusDTOs = wrapper.getStatuses().stream()
+                .map(this::mapToOrderStatusDTO)
+                .toList();
+
+        OrderResponseDTO response = new OrderResponseDTO();
+        response.setOrderId(order.getId());
+        response.setUserId(Long.valueOf(order.getUserId()));
+        response.setOrderDate(order.getOrderDate());
+        response.setTotalPrice(order.getTotalPrice());
+        response.setStatus(order.getStatus());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+        response.setOrderItems(itemResponses);
+        response.setPaymentId(order.getPaymentId());
+        response.setOrderStatuses(statusDTOs);
+
+        return response;
+    }
+
+    @Override
+    public List<OrderResponseDTO> getOrdersByUserId(String userId) {
+        List<OrderWrapper> wrappers = orderRepository.findOrdersByUserId(userId);
+        return wrappers.stream()
+                .map(wrapper -> getOrderById(wrapper.getOrder().getId()))
+                .toList();
+    }
+
+    public OrderResponseDTO updatePaymentDetails(OrderPaymentUpdateDTO paymentUpdateDTO) {
+        String orderId = paymentUpdateDTO.getOrderId();
+        String paymentId = paymentUpdateDTO.getPaymentId();
+        String newStatusName = paymentUpdateDTO.getStatus();
+
+        // Fetch the existing order
+        OrderWrapper wrapper = orderRepository.findOrderById(orderId);
+        if (wrapper == null) {
+            throw new RuntimeException("Order not found for ID: " + orderId);
+        }
+
+        Orders order = wrapper.getOrder();
+        LocalDateTime now = LocalDateTime.now();
+
+        // Update payment details
+        order.setPaymentId(paymentId);
+        order.setStatus(newStatusName);
+        order.setUpdatedAt(now);
+
+        // Create a new OrderStatus entry
+        OrderStatus paymentStatus = new OrderStatus();
+        paymentStatus.setOrderStatusId(Math.abs(UUID.randomUUID().hashCode()));
+        paymentStatus.setOrderId(orderId);
+        paymentStatus.setStatusName(newStatusName);
+        paymentStatus.setStatusDescription("Payment status updated to " + newStatusName);
+        paymentStatus.setStatusDate(now.toString());
+        paymentStatus.setCreatedAt(now.toString());
+        paymentStatus.setUpdatedAt(now.toString());
+
+        // Append the new status to the list
+        List<OrderStatus> updatedStatuses = new ArrayList<>(wrapper.getStatuses());
+        updatedStatuses.add(paymentStatus);
+
+        // Update wrapper and save
+        wrapper.setOrder(order);
+        wrapper.setStatuses(updatedStatuses);
+        orderRepository.saveOrderWrapper(wrapper);
+
+        // Prepare response DTOs
+        List<OrderItemResponseDTO> itemResponses = wrapper.getItems().stream().map(item -> {
+            OrderItemResponseDTO dto = new OrderItemResponseDTO();
+            dto.setOrderItemId(item.getOrderItemId());
+            dto.setProductId(Long.valueOf(item.getProductId()));
+            dto.setProductName(item.getProductName());
+            dto.setQuantity(item.getQuantity());
+            dto.setPrice(item.getPrice());
+            return dto;
+        }).toList();
+
+        List<OrderStatusDTO> statusDTOs = updatedStatuses.stream()
+                .map(this::mapToOrderStatusDTO)
+                .toList();
+
+        OrderResponseDTO response = new OrderResponseDTO();
+        response.setOrderId(order.getId());
+        response.setUserId(Long.valueOf(order.getUserId()));
+        response.setOrderDate(order.getOrderDate());
+        response.setTotalPrice(order.getTotalPrice());
+        response.setStatus(order.getStatus());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+        response.setOrderItems(itemResponses);
+        response.setPaymentId(order.getPaymentId());
+        response.setOrderStatuses(statusDTOs);
+
+        return response;
     }
 }

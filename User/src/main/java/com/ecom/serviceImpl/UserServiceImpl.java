@@ -62,28 +62,33 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         // Step 1: Encode the password
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+        // Step 2: Handle role assignment
+        String roleName;
         if (userDto.getRole() == null || userDto.getRole().getRoleName() == null) {
-            throw new RuntimeException("Role name must be provided");
-        }
-        Role role = roleRepository.findByRoleName(userDto.getRole().getRoleName());
-        if (role == null) {
-            // Role does not exist, create it.
-            role = new Role();
-            role.setRoleName(userDto.getRole().getRoleName());
-            //  Set other role properties if you have any (e.g., roleDescription)
-            role = roleRepository.save(role); // Save the new role to the database.
+            roleName = "USER"; // Default role name
+        } else {
+            roleName = userDto.getRole().getRoleName();
         }
 
-        // Step 3: Convert UserDto to User and assign the fetched/created role
-        User user = dtoToUser(userDto); // You need to implement this conversion
+        Role role = roleRepository.findByRoleName(roleName);
+        if (role == null) {
+            role = new Role();
+            role.setRoleName(roleName);
+            role = roleRepository.save(role);
+        }
+
+        // Step 3: Convert UserDto to User and assign the role
+        User user = dtoToUser(userDto);
         user.setRole(role);
 
-        // Step 5: Save the user to the repository
+        // Step 4: Save the user to the repository
         User savedUser = userRepository.save(user);
 
-        // Step 6: Convert the saved User entity back to UserDto and return it
+        // Step 5: Convert back to UserDto and return
         return userToDto(savedUser);
     }
+
     @Override
     public UserDto updateUser(UserDto userDto, Integer userId) {
         Optional<User> optionalUser = userRepository.findById(userId);

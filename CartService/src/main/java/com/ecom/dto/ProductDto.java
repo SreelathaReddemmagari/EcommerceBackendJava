@@ -1,5 +1,7 @@
 package com.ecom.dto;
-
+//This DTO represents a product retrieved from another microservice (likely via Feign Client).
+//Encapsulates product fields like id, name, price, etc.
+//Ensures service-to-service communication happens in a standardized, versioned, and controlled format.
 public class ProductDto {
     private Long id;
     private String name;

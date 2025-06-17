@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 
 import java.io.IOException;
 import java.util.List;
-
+//Intercepts requests and sets user details in security context
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

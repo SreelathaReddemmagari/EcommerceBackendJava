@@ -17,6 +17,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
     @Configuration
     @EnableMethodSecurity(prePostEnabled = true)
+
+    //Configures JWT-based stateless security, allowing public endpoints and securing all others using a custom filter.
     public class SecurityConfig {
 
         @Bean

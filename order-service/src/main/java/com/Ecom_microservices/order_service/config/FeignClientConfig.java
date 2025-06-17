@@ -1,4 +1,4 @@
-package com.ecom.config;
+package com.Ecom_microservices.order_service.config;
 // In your Cart Service application
 import com.example.jwt.config.RequestContext;
 import feign.RequestInterceptor;

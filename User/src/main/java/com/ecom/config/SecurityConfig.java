@@ -74,9 +74,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login", "/auth/create-user", "/auth/refresh-token").permitAll()
 
                         // Role-based protected endpoints
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/supervisor/**").hasRole("SUPERVISOR")
-                        .requestMatchers("/api/user/**").hasRole("USER")
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/api/supervisor/**").hasRole("SUPERVISOR")
+//                        .requestMatchers("/api/user/**").hasRole("USER")
 
                         // All other endpoints require authentication
                         .anyRequest().authenticated()

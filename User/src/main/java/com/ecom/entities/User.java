@@ -25,6 +25,7 @@ public class User{
  private int age;
  private String gender;
  private String phoneNumber;
+ private String imageurl;
 
  // Many users can have one role
  @ManyToOne(fetch = FetchType.EAGER)

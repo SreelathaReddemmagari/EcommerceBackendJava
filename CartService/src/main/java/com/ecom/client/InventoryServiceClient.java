@@ -3,8 +3,8 @@ package com.ecom.client;
 import com.ecom.dto.InventoryDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-
-@FeignClient(name = "InventoryService",url = "http://localhost:9095")
+//inventory service client which is used to interact with the inventory service  to reserve,reduce and release stocks
+@FeignClient(name = "inventory-service")
 public interface InventoryServiceClient {
 
     @GetMapping("/inventory/product/{productId}")
@@ -24,4 +24,6 @@ public interface InventoryServiceClient {
     @DeleteMapping("/inventory/release")
     void releaseReservationsForCart(@RequestParam("cartId") String cartId);
 
+    @GetMapping("/available/{productId}")
+    Integer getAvailableStock(@PathVariable("productId") String productId);
 }

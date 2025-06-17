@@ -4,7 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "InventoryService", url = "http://localhost:9095")
+@FeignClient(name = "inventory-service")
 public interface InventoryClient {
 //    @PostMapping("/api/inventory/reduce")
 //    boolean reduceStock(@RequestParam("skuCode") String skuCode, @RequestParam("quantity") Integer quantity);

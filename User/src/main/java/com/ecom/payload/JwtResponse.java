@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class JwtResponse {
     private String token;
+    private String refreshToken;
     private String username;
     private List<String> roles;
 
@@ -17,9 +18,9 @@ public class JwtResponse {
     public JwtResponse() {}
 
     // Constructor with parameters
-    public JwtResponse(String token, String username, List<String> roles) {
+    public JwtResponse(String token, String refreshToken, String username, List<String> roles) {
         this.token = token;
-
+        this.refreshToken = refreshToken;
         this.username = username;
         this.roles = roles;
     }
@@ -33,7 +34,13 @@ public class JwtResponse {
         this.token = token;
     }
 
+    public String getRefreshToken() {
+        return refreshToken;
+    }
 
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 
     public String getUsername() {
         return username;
@@ -59,6 +66,7 @@ public class JwtResponse {
     public static class JwtResponseBuilder {
 
         private String token;
+        private String refreshToken;
         private String username;
         private List<String> roles;
 
@@ -67,10 +75,10 @@ public class JwtResponse {
             return this;
         }
 
-//        public JwtResponseBuilder refreshToken(String refreshToken) {
-//            this.refreshToken = refreshToken;
-//            return this;
-//        }
+        public JwtResponseBuilder refreshToken(String refreshToken) {
+            this.refreshToken = refreshToken;
+            return this;
+        }
 
         public JwtResponseBuilder username(String username) {
             this.username = username;
@@ -83,8 +91,7 @@ public class JwtResponse {
         }
 
         public JwtResponse build() {
-            return new JwtResponse(token, username, roles);
+            return new JwtResponse(token, refreshToken, username, roles);
         }
     }
-
 }

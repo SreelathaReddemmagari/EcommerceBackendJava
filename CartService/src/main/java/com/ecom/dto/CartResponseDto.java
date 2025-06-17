@@ -1,7 +1,7 @@
 package com.ecom.dto;
 
 import java.util.List;
-
+//Used to send a structured, clean, and frontend-friendly response after cart creation.
 public class CartResponseDto {
     private String cartId;
     private Integer userId;

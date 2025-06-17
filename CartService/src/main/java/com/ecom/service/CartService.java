@@ -7,7 +7,9 @@ import com.ecom.model.Cart;
 import com.ecom.model.CartItem;
 import com.ecom.repo.CartItemRepository;
 import com.ecom.repo.CartRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -56,18 +58,18 @@ public class CartService {
 //    }
 //
 //    private CartItem createCartItemFromProductService(Cart cart, Long productId, Integer quantity) {
-////        ProductDto product = productServiceClient.getProductById(productId);
-////        if (product == null) {
-////            throw new RuntimeException("Product not found with ID: " + productId);
-////        }
-////
-////        CartItem item = new CartItem();
-////        item.setCart(cart); // Must have non-null ID
-////        item.setProductId(product.getId());
-////        item.setProductName(product.getName());
-////        item.setUnitPrice(product.getPrice());
-////        item.setQuantity(quantity);
-////        return item;
+    /// /        ProductDto product = productServiceClient.getProductById(productId);
+    /// /        if (product == null) {
+    /// /            throw new RuntimeException("Product not found with ID: " + productId);
+    /// /        }
+    /// /
+    /// /        CartItem item = new CartItem();
+    /// /        item.setCart(cart); // Must have non-null ID
+    /// /        item.setProductId(product.getId());
+    /// /        item.setProductName(product.getName());
+    /// /        item.setUnitPrice(product.getPrice());
+    /// /        item.setQuantity(quantity);
+    /// /        return item;
 //        ProductDto product = productServiceClient.getProductById(productId);
 //        if (product == null) {
 //            throw new RuntimeException("Product not found with ID: " + productId);
@@ -117,7 +119,7 @@ public class CartService {
 //            cartItemRepository.deleteByCart(cart);
 //        }
 //    }
-private final CartRepository cartRepository;
+    private final CartRepository cartRepository;
     private final ProductServiceClient productServiceClient;
     private final CartItemRepository cartItemRepository;
     private final InventoryServiceClient inventoryServiceClient;
@@ -187,6 +189,7 @@ private final CartRepository cartRepository;
         cart.setUserId(cartRequestDTO.getUserId());
         cart.setCreatedAt(LocalDateTime.now());
         cart.setUpdatedAt(LocalDateTime.now());
+
         cart = cartRepository.save(cart); // Now it has a valid ID
 
         List<CartItem> items = new ArrayList<>();
@@ -267,9 +270,6 @@ private final CartRepository cartRepository;
                 .collect(Collectors.toList());
     }
 
-
-
-
     public void clearCart(Integer userId) {
         Cart cart = cartRepository.findByUserId(userId);
         if (cart.getCartId() == null) {
@@ -287,3 +287,5 @@ private final CartRepository cartRepository;
         }
     }
 }
+
+

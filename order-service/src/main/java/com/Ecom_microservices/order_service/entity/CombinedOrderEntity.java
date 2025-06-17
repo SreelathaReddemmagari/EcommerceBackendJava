@@ -14,10 +14,10 @@ import java.util.List;
 public class CombinedOrderEntity {
 
     @DynamoDBHashKey(attributeName = "PK")
-    private String pk; // e.g., "o#<orderId>"
+    private String pk;
 
     @DynamoDBRangeKey(attributeName = "SK")
-    private String sk; // e.g., "order#<orderId>"
+    private String sk;
 
     @DynamoDBAttribute
     private String id;

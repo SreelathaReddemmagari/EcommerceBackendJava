@@ -16,10 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+//Loads user info (email, password, role) from the database
 @Service
 public class CustomeUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepo userRepo;
+
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(username);

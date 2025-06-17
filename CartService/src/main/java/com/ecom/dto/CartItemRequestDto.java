@@ -1,5 +1,5 @@
 package com.ecom.dto;
-
+//Used inside: CartRequestDto as a list of cart items.
 public class CartItemRequestDto {
     private Long productId;
     private Integer quantity;

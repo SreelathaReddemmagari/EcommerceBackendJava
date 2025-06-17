@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-
+//FeignClientConfig fetches the same JWT token and attaches it to the Feign request.
+//Intercepts Feign requests to add the current JWT token from context into the Authorization header.
 @Configuration
 public class FeignClientConfig {
 

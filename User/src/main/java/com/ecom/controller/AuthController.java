@@ -101,35 +101,71 @@ public class AuthController {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
-        authenticate(request.getUsername(), request.getPassword());
+//    @PostMapping("/login")
+//    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
+//        authenticate(request.getUsername(), request.getPassword());
+//
+//        // Load user details using the username
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+//        String token = jwtHelper.generateToken(userDetails);
+//
+//        // Retrieve the User object directly
+//        User user = userRepo.findByEmail(request.getUsername());
+//
+//        // If the user is not found, return NOT_FOUND status
+//        if (user == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        // Create the response with JWT token and roles
+////        JwtResponse response = JwtResponse.builder()
+////                .token(token)
+//////                .refreshToken(jwtHelper.generateRefreshToken(userDetails.getUsername())) // Generate refresh token
+////                .username(userDetails.getUsername())
+////                .roles(userDetails.getAuthorities()
+////                        .stream()
+////                        .map(GrantedAuthority::getAuthority)
+////                        .collect(Collectors.toList()))
+////                .build();
+////
+////        return ResponseEntity.ok(response);
+//        JwtResponse response = JwtResponse.builder()
+//                .token(token)
+//                .refreshToken(jwtHelper.generateRefreshToken(userDetails.getUsername())) // ✅ generate refresh token
+//                .username(userDetails.getUsername())
+//                .roles(userDetails.getAuthorities()
+//                        .stream()
+//                        .map(GrantedAuthority::getAuthority)
+//                        .collect(Collectors.toList()))
+//                .build();
+//        return ResponseEntity.ok(response);
+//
+//    }
+@PostMapping("/login")
+public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
+    authenticate(request.getUsername(), request.getPassword());
 
-        // Load user details using the username
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        String token = jwtHelper.generateToken(userDetails);
+    UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+    String token = jwtHelper.generateToken(userDetails);
+    String refreshToken = jwtHelper.generateRefreshToken(userDetails.getUsername());
 
-        // Retrieve the User object directly
-        User user = userRepo.findByEmail(request.getUsername());
-
-        // If the user is not found, return NOT_FOUND status
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // Create the response with JWT token and roles
-        JwtResponse response = JwtResponse.builder()
-                .token(token)
-//                .refreshToken(jwtHelper.generateRefreshToken(userDetails.getUsername())) // Generate refresh token
-                .username(userDetails.getUsername())
-                .roles(userDetails.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
-                .build();
-
-        return ResponseEntity.ok(response);
+    User user = userRepo.findByEmail(request.getUsername());
+    if (user == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    JwtResponse response = JwtResponse.builder()
+            .token(token)
+            .refreshToken(refreshToken) //  Include refresh token here
+            .username(userDetails.getUsername())
+            .roles(userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList()))
+            .build();
+
+    return ResponseEntity.ok(response);
+}
+
     @PostMapping("/create-user")
     public ResponseEntity<String> createUser(@RequestBody UserDto userDto) {
         try {
@@ -148,9 +184,11 @@ public class AuthController {
 
         if (jwtHelper.validateRefreshToken(refreshToken, userDetails)) {
             String newToken = jwtHelper.generateToken(userDetails);
+            String newRefreshToken = jwtHelper.generateRefreshToken(username);
             return ResponseEntity.ok(JwtResponse.builder()
                     .token(newToken)
                     .username(username)
+                    .refreshToken(newRefreshToken)
                     .roles(userDetails.getAuthorities().stream()
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.toList()))

@@ -14,6 +14,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         scanBasePackages = {"com.ecom", "com.ecom.client","com.ecom.repository"}
 )
 @EnableFeignClients(basePackages = "com.ecom.client")
+
 public class CartServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(CartServiceApplication.class,args);
